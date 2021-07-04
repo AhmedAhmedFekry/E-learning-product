@@ -1,0 +1,32 @@
+{% extends "base/base.html" %}
+{% load crispy_forms_tags %}
+{% block title %}
+  Edit "{{ course.title }}"
+{% endblock %}
+
+{% block content %}
+ <div class="container">
+  <div class="section-title" style="margin-bottom: 20px;">
+    <h2>{{ course.title }}</h2>
+
+ 
+      <p>Edit Modules</p>
+    
+
+    
+
+    
+
+  </div>
+  
+  <div class="module">
+
+    <form method="post">
+      {{ formset|crispy }}
+      {{ formset.management_form }}
+      {% csrf_token %}
+      <input type="submit" style="border: none;" class="get-started-btn" value="Save modules">
+    </form>
+  </div>
+ </div>
+{% endblock %}

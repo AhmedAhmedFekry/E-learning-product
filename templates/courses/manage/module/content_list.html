@@ -1,0 +1,149 @@
+{% extends "base/base.html" %}
+{% load course %}
+
+{% block title %}
+  Module {{ module.order|add:1 }}: {{ module.title }}
+{% endblock %}
+
+{% block content %}
+
+
+<div class="container">
+  {% with course=module.course %}
+
+  <div class="section-title" style="margin-bottom: 20px;">
+    <h2>{{ course.title }}</h2>
+    <p>My Modules</p>
+
+    <a href="{% url 'course_module_update' course.id %}" class="get-started-btn" style="float: right;">Edit Modules</a>
+
+  </div>
+
+  
+  <!-- ======= Cource Details Tabs Section ======= -->
+  <section id="cource-details-tabs" class="cource-details-tabs">
+    <div class="container" data-aos="fade-up">
+  
+      <div class="row">
+        <div class="col-lg-3">
+          <ul class="nav nav-tabs flex-column">
+            {% for m in course.modules.all %}
+   
+        <li class="nav-item">
+          <a class="nav-link  show" data-toggle="tab" href="#{{m.title}}">
+            <span>
+            Module <span class="order">{{ m.order|add:1 }}</span>
+          </span>:&nbsp;{{ m.title }}</a>
+        </li>
+        {% empty %}
+        <li>No modules yet.</li>
+            {% endfor %}
+           
+            
+          
+           
+          </ul>
+        </div>
+        <div class="col-lg-9 mt-4 mt-lg-0">
+          <div class="tab-content">
+            <div id="module-contents">
+              <h3>Add new content:</h3>
+              <ul class="content-types">
+                <li><a href="{% url "module_content_create" module.id "text" %}">
+                Text</a></li>
+                <li><a href="{% url "module_content_create" module.id "image" %}">
+                Image</a></li>
+                <li><a href="{% url "module_content_create" module.id "video" %}">
+                Video</a></li>
+                <li><a href="{% url "module_content_create" module.id "file" %}">
+                File</a></li>
+              </ul>
+            </div>
+            {% for m in course.modules.all %}
+            <div class="tab-pane  show" id="{{m.title}}">
+              <div class="row">
+                <div class="col-lg-8 details order-2 order-lg-1">
+                  <h3>Module contents:</h3>
+                  {% for content in m.contents.all %}
+                  {% with item=content.item %}
+          
+
+                  <p> {{ item }} ({{ item|model_name }}) </p>
+                  <p>  {{ item.render }}</p>
+                  <a  class="get-started-btn" style="float: left;"  href="{% url "module_content_update" module.id item|model_name item.id %}">
+                    Edit
+                  </a>
+                  <form action="{% url "module_content_delete" content.id %}" method="post">
+                    <input type="submit" style="border: none;" class="get-started-btn" value="Delete">
+                    {% csrf_token %}
+                  </form>
+                  {% endwith %}
+                  {% endfor %}
+                  <p></p>
+                 
+                </div>
+                <div class="col-lg-4 text-center order-1 order-lg-2">
+                  <img src="assets/img/course-details-tab-1.png" alt="" class="img-fluid">
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+          
+          </div>
+        </div>
+      </div>
+  
+    </div>
+  </section><!-- End Cource Details Tabs Section -->
+
+
+
+  <
+  </div>
+{% endwith %}
+</div>
+
+{% with course=module.course %}
+
+
+{% endwith %}
+{% endblock %}
+
+{% block domready %}
+  $('#modules').sortable({
+      stop: function(event, ui) {
+          modules_order = {};
+          $('#modules').children().each(function(){
+              // update the order field
+              $(this).find('.order').text($(this).index() + 1);
+              // associate the module's id with its order
+              modules_order[$(this).data('id')] = $(this).index();
+          });
+          $.ajax({
+              type: 'POST',
+              url: '{% url "module_order" %}',
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json',
+              data: JSON.stringify(modules_order)
+          });
+      }
+  });
+
+  $('#module-contents').sortable({
+      stop: function(event, ui) {
+          contents_order = {};
+          $('#module-contents').children().each(function(){
+              // associate the module's id with its order
+              contents_order[$(this).data('id')] = $(this).index();
+          });
+
+          $.ajax({
+              type: 'POST',
+              url: '{% url "content_order" %}',
+              contentType: 'application/json; charset=utf-8',
+              dataType: 'json',
+              data: JSON.stringify(contents_order),
+          });
+      }
+  });
+{% endblock %}
