@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey 
 from .fields import OrderField
-from project import settings
+from project.settings import base as settings
 from django.template.loader import render_to_string
 
 class Subject(models.Model):

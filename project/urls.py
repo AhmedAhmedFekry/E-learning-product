@@ -19,7 +19,8 @@ from django.urls import path , include
 from django.contrib.auth import views as auth_views
 from courses import views
 from django.conf.urls.static import static
-from django.conf import settings
+from django.conf import settings 
+# from project.settings import base as settings
 urlpatterns = [
     path('',views.CourseListView.as_view(), name='course_list'),
      path('api/', include('courses.api.urls', namespace='api')),
